@@ -1,0 +1,129 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <title>Web Developer Quiz</title>
+        <link rel="stylesheet" href="index.css" type="text/css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>Employee Info</h2>
+            </div>
+            <form id="employee-form_id" class="employee-form">
+                <div class="form-control">
+                    <label for="employee-name" id="name-error" class="error">Employee Name</label>
+                    <input id="employee-name_id" type="text" placeholder="Employee Name">
+                </div>
+                <div class="form-control">
+                    <label for="employee-number" id="name-error" class="error">Employee Number</label>
+                    <input id="employee-number_id" type="text" placeholder="Employee Number">
+                </div>
+                <div class="form-control">
+                    <label for="phone-number" id="name-error" class="error">Phone Number</label>
+                    <input id="phone-number_id"  onkeydown='phoneFormatter()' type="text" placeholder="Phone Number">
+                </div>
+                <div class="form-control">
+                    <label for="address" id="name-error" class="error">Address</label>
+                    <input id="address_id" type="text" placeholder="Address">
+                </div>
+                <div class="form-control">
+                    <label for="city" id="name-error" class="error">City</label>
+                    <input id="city_id"  type="text" placeholder="City">
+                </div>
+                <div class="form-control">
+                    <label for="state" id="name-error" class="error">State</label>
+                    <input id="state_id" type="text" placeholder="State">
+                </div>
+                <div class="form-control">
+                    <label for="Zip" id="name-error" class="error">Zip</label>
+                    <input id="zip_id" type="text" placeholder="Zip">
+                </div>
+                <div class="checkbox-control">
+                    <label for="current-employee" id="name-error" class="error">Are you a current employee?</label>
+                    <input id="current-employee_id" type="checkbox" name="current" value="yes">
+                </div>
+                <div class="form-control">
+                    <input type="button" id="submit" onclick="submitInfo()" value="SEND">
+                </div>
+            </form>
+        </div>
+        <script>
+            // Function to format a phone number in the style (XXX) XXX-XXXX
+            function formatPhone(value) {
+                if (!value) return value;
+                const number = value.replace(/[^\d]/g, '');
+                const numberLength = number.length;
+                if (numberLength < 4) return number;
+                if (numberLength < 7) {
+                    return `(${number.slice(0, 3)}) ${number.slice(3)}`;
+                }
+                return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(6, 9)}`;
+            }
+
+            // Function that is called to begin formatting phoen number upon user input
+            function phoneFormatter() {
+                const numberInput = document.getElementById('phone-number_id');
+                const formattedNumber = formatPhone(numberInput.value);
+                numberInput.value = formattedNumber;
+            }
+
+            /* 
+            Function that utilizes JQuery in order to collect user info from and 
+            convert it into a JSON to send to designated url via a http request
+            */
+            function submitInfo () {
+                var checkBox = document.getElementById('current-employee_id').checked;
+                if (checkBox==false)
+                {
+                    var currentEmployee = 'no';
+                }
+                else
+                {
+                    var currentEmployee = $('#current-employee_id').val();
+                }
+                var employeeName = $('#employee-name_id').val();
+                var employeeNumber = $('#employee-number_id').val();
+                var phoneNumber = $('#phone-number_id').val();
+                var address = $('#address_id').val();
+                var city = $('#city_id').val();
+                var state = $('#state_id').val();
+                var zip = $('#zip_id').val();
+
+                employeeJSON={
+                    "EmployeeName": "",
+                    "EmployeeNumber": "",
+                    "PhoneNumber": "",
+                    "Address": "",
+                    "City": "",
+                    "State": "",
+                    "Zip": "",
+                    "CurrentEmployee": "",
+                }
+                
+                employeeJSON.EmployeeName=employeeName;
+                employeeJSON.EmployeeNumber=employeeNumber;
+                employeeJSON.PhoneNumber=phoneNumber;
+                employeeJSON.Address=address;
+                employeeJSON.City=city;
+                employeeJSON.State=state;
+                employeeJSON.Zip=zip;
+                employeeJSON.CurrentEmployee=currentEmployee;
+
+                var infoString=JSON.stringify(employeeJSON);
+
+                const xhr = new XMLHttpRequest();
+                const url = 'https://jsonplaceholder.typicode.com/posts';
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readystate === 4 && xhr.status === 201)
+                    {
+                        const serverResponse = JSON.parse(xhr.response);
+                    }
+                }
+                xhr.send(infoString);
+            }
+        </script>
+    </body>
+</html>
